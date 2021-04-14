@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
+import SearchItem from './SearchItem';
 
 function ItemList() {
     let [list, setList] = useState([]);
     const [nameToBeUpdate, setNameToUpdate] = useState('');
     const [id, setId] = useState(null);
+    const [showData, setShowData] = useState(false);
 
     useEffect(() => {
-        if(confirm('Do you want to show?')) {
-            setList(JSON.parse(localStorage.getItem('data')));
-        }
-    }, [list]);
+        setList(JSON.parse(localStorage.getItem('data')));
+    }, [list, showData]);
 
     const handleDelete = (id) => {
         setList(list.splice(id, 1));
@@ -34,18 +34,20 @@ function ItemList() {
 
     return (
         <div>
-            {list.map((item, index) => {
+            <button onClick={() => setShowData(showData => !showData)}>{showData ? 'Hide data' : 'Show data'}</button>
+            {showData ? (list.map((item, index) => {
                 return (
-                    <div>
+                    <div key={index}>
                         <input hidden={id !== index} type="text" defaultValue={nameToBeUpdate} onChange={(e) => setNameToUpdate(e.target.value)}></input>
                         <button disabled={!nameToBeUpdate} hidden={id !== index} onClick={() => handleSave(index)}>Save</button>
-                        <li key={index}>{item.name} is {item.age} years old.
+                        <li>{item.name} is {item.age} years old.
                             <button onClick={() => handleDelete(index)} style={{marginLeft: '10px'}}>Delete</button>
                             <button onClick={() => handleUpdate(item, index)} style={{marginLeft: '5px'}}>Edit</button>
                         </li>
                     </div>
                 )
-            })}
+            })) : ''}
+            <SearchItem />
         </div>
     )
 }
